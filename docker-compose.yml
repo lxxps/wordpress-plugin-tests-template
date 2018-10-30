@@ -1,0 +1,38 @@
+version: '2.1'
+
+services:
+  wordpress:
+    volumes:
+      - ./src:/wordpress/src
+      - ./tests:/wordpress/tests
+    build:
+      context: .
+      args:
+        WORDPRESS_DB_PASSWORD: pass
+        PHP_IMAGE_TAG: 7.0-alpine
+        WORDPRESS_VERSION: 4.9.8
+    depends_on:
+      mysql:
+        condition: service_healthy
+#    links:
+#      - mysql
+    networks:
+      - wordpress_tests
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - '3306:3306'
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=pass --host=mysql --port=3306 --execute='SHOW DATABASES;'"
+      interval: 3s
+      timeout: 1s
+      retries: 5
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    networks:
+      - wordpress_tests
+      
+networks:
+  wordpress_tests: null
