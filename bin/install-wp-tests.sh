@@ -72,8 +72,23 @@ install_test_suite() {
 	if [ ! -d $WP_TESTS_DIR ]; then
 		# set up testing suite
 		mkdir -p $WP_TESTS_DIR
-		svn -q co https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ $WP_TESTS_DIR/includes
-		svn -q co https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/data/ $WP_TESTS_DIR/data
+
+                mkdir -p /tmp/wordpress-develop
+                cd /tmp/wordpress-develop
+                git init
+                git config core.sparsecheckout true
+                echo tests/phpunit/includes >> .git/info/sparse-checkout
+                echo tests/phpunit/data >> .git/info/sparse-checkout
+                git remote add -f origin https://github.com/WordPress/wordpress-develop.git
+                git pull origin $WP_VERSION
+                mv tests/phpunit/includes $WP_TESTS_DIR/includes
+                mv tests/phpunit/data $WP_TESTS_DIR/data
+
+                cd /
+                rm -rf /tmp/wordpress-develop
+
+#		svn -q co https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ $WP_TESTS_DIR/includes
+#		svn -q co https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/data/ $WP_TESTS_DIR/data
 	fi
 
 	if [ ! -f wp-tests-config.php ]; then

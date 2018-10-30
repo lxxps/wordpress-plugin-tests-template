@@ -34,6 +34,8 @@ install_db() {
 	fi
 
 	# create database
+        # mysql --user=$DB_USER --password=$DB_PASS$EXTRA --execute='CREATE DATABASE IF NOT EXISTS "$DB_NAME";'
+
 	mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA
 }
 
